@@ -1,13 +1,360 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300&family=Playfair+Display&display=swap');
+
+iframe
+{
+    display: none;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@media only screen and (max-width: 990px) {
+  .space {
+    margin-right: 20px; /* or any other value you prefer */
+  }
+}
+
+textarea {
+    max-width: 100%;
+}
+
+.inline-list li {
+    display: inline-block;
+    list-style-type: none;
+    padding-right: 20px;
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    background-color: #fff;
+    color: #8c8c8c; 
+}
+
+.raise:hover,
+.raise:focus {
+  box-shadow: 0 0.5em 0.5em -0.4em var(--hover);
+  transform: translateY(-0.25em);
+}
+
+.raise {
+    border: 2px solid #ffa260;
+    color: #ffa260;
+  }
+  
+  .raise:hover {
+    border-color: #e5ff60;
+    color: #e5ff60;
+  }
+
+
+  #subject::placeholder {
+    color: #567189;
+    font-size: 16px;
+  }
+  
+  #message::placeholder {
+    color: #567189;
+    font-size: 16px;
+  }
+
+  #email::placeholder {
+    color: #567189;
+    font-size: 16px;
+  }
+
+  #name::placeholder {
+    color: #567189;
+    font-size: 16px;
+  }
+  
+  
+  .pulse:hover,
+.pulse:focus {
+  animation: pulse 1s;
+  box-shadow: 0 0 0 2em transparent;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--hover);
+  }
+}
+
+
+.pulse {
+    --color: #ef6eae;
+    --hover: #3A98B9;
+  }
+  
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50%);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+
+  /* .fade-in-up {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUpp 1s forwards;
+  }
+  
+  @keyframes fadeInUpp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  } */
+
+  .animate-slide-in {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.5s ease-out;
+  }
+  
+  .animate-slide-in.animate {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
+  .img-fluid {
+    width: 100%;
+    height: 475px;
+  }
+
+  .fade-in {
+    animation: fadein 2s;
+  }
+  
+  @keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .content {
+    width: 100%;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+
+  .explanation-message {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .explanation-message .why {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+  
+  .explanation-message .message {
+    max-width: 250px;
+    word-wrap: break-word;
+  }
+
+  
+
+ @media only screen and (max-width: 540px) {
+
+    nav{
+      margin: "0px 0px 50px 0px";
+    }
+
+    body{
+      padding-top: 37px;
+    }
+    
+    .alert{
+      z-index: 50;
+      margin-bottom: 50px;
+    }
+  }
+  .navbar-nav {
+    flex-direction: row !important;
+  }
+  
+  @media (max-width: 992px) {
+    .navbar-nav {
+      flex-direction: column !important;
+    }
+    .navbar-collapse {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+    }
+    .navbar-collapse.show {
+      max-height: 400px;  /* Adjust this value based on your content */
+    }
+    
+    .navbar-nav.flex-column .nav-item {
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  li::marker {
+    content: "";
+  }
+
+
+  /* For light mode */
+.form-control::placeholder {
+  color: #666; /* or any color that suits the light background */
+  opacity: 0.8; /* Firefox */
+}
+
+.interactive-icon {
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.interactive-icon:hover {
+  transform: translateY(-5px);
+}
+
+.interactive-icon .fa-thumbs-up {
+  color: #379237;
+}
+
+.interactive-icon .fa-eye {
+  color: blue;
+}
+
+.interactive-icon .fa-thumbs-down {
+  color: red;
+}
+
+.interactive-icon .fa-star {
+  color: red;
+}
+.interactive-icon .fa-trophy {
+  color: #337CCF;
+}
+
+.interactive-icon .fa-comments {
+  color: #FFC436;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .interactive-icon .fas {
+    font-size: 1em;
+  }
+
+  .interactive-icon span {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  .interactive-icon .fas {
+    font-size: 0.8em;
+  }
+
+  .interactive-icon span {
+    font-size: 0.6em;
+  }
+}
+
+/* If you are using CSS, you can use these styles */
+
+.header-line {
+  border-bottom: 2px solid #3f51b5;
+}
+
+.sub-section {
+  margin-top: 20px;
+}
+
+/* YourComponentStyles.css */
+
+.channel-title {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.channel-info {
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.stats-grid {
+  margin-top: 20px;
+}
+
+.stat-item:hover {
+  transform: scale(1.05);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Scroll Bar Code */
+&::-webkit-scrollbar {
+  width: 4px; 
+  height: 4px; 
+}
+
+&::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 2px; 
+}
+
+&::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+
+
+@media (max-width: 796px) {
+  .my-container {
+    flex-direction: column !important;
+  }
+  .button-container {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;  /* Center the buttons */
+    gap: 10px;
+  }
+}
+
+@media (min-width: 797px) {
+  .my-container {
+    display: flex;
+    align-items: center;
+  }
+  .button-container {
+    margin-left: 10px;
+    display: flex;
+    gap: 10px;
+  }
+}
+
+/* Smaller font size for screens less than 768px */
+@media (max-width: 767px) {
+  .dropdown-menu {
+    font-size: 0.7rem;
+  }
+
+  .dropdown-header {
+    font-size: 0.8rem;
+  }
 }
