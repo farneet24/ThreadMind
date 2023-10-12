@@ -4,7 +4,9 @@ import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import FAQ from "./FAQ";
 import Tech from "./Technologies";
+import RatingForm from "./Rating";
 
+// Styled component for the Tab container
 const TabContainer = styled.div`
   width: 100%;
   display: flex;
@@ -12,9 +14,10 @@ const TabContainer = styled.div`
   align-items: flex-start; /* This aligns the child components to the start */
 `;
 
+// Styled component for the Tab buttons
 const TabButtons = styled.div`
   display: inline-flex; /* Changed from flex to inline-flex */
-  max-width : 100%;
+  max-width: 100%;
   flex-wrap: nowrap; // Prevent line wrapping
   overflow-x: auto; // Enable horizontal scrolling
   -webkit-overflow-scrolling: touch; // Enable smooth scrolling on iOS
@@ -32,6 +35,7 @@ const TabButtons = styled.div`
   }
 `;
 
+// Styled component for each individual Tab button
 const TabButton = styled.button`
   padding: 16px;
   min-width: 120px;
@@ -51,6 +55,7 @@ const TabButton = styled.button`
   }
 `;
 
+// Styled component for the content of each Tab
 const TabContent = styled.div`
   display: ${(props) => (props.active ? "block" : "none")};
   padding: 20px;
@@ -65,29 +70,29 @@ const TabContent = styled.div`
 export default function About(props) {
   const location = useLocation();
 
+  // Scroll to top when location changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
-
+  // Initialize dynamic styles for tab content
   let tabcontentStyle = {
     color: props.mode === "dark" ? "#EAEAEA" : "#191919",
     backgroundColor: props.mode === "dark" ? "#1E1E1E" : "white",
   };
-
-  // let myStyle = {
-  //   color: props.mode === "dark" ? "white" : "#191919",
-  //   backgroundColor: props.mode === "dark" ? "#191919" : "white",
-  // };
-
+  // Initialize state for active tab
   const [activeTab, setActiveTab] = useState(0);
+
+  // Data for Tabs
   const tabs = [
     {
       title: "Real-Time Data",
       content: (
         <>
-          ThreadMind utilizes robust social media APIs to pull in real-time comments and information including statistics, descriptions, etc from platforms like YouTube and Reddit. Stay ahead of the curve by understanding the sentiment around your content as it happens.
+          ThreadMind utilizes robust social media APIs to pull in real-time
+          comments and information including statistics, descriptions, etc from
+          platforms like YouTube and Reddit. Stay ahead of the curve by
+          understanding the sentiment around your content as it happens.
           <br />
-          {/* <img src="https://images.theconversation.com/files/191827/original/file-20171025-25516-g7rtyl.jpg?ixlib=rb-1.1.0&rect=0%2C70%2C7875%2C5667&q=45&auto=format&w=926&fit=clip" alt="Description" /> */}
         </>
       ),
     },
@@ -95,9 +100,12 @@ export default function About(props) {
       title: "Advanced Analysis",
       content: (
         <>
-          ThreadMind uses Natural Language Processing to analyze comments for sentiment, emotion, and cyberbullying, supplemented by keyword extraction and summarization features. For better data interpretation, the platform leverages Highcharts.js to present these analytical insights in the form of interactive charts.
+          ThreadMind uses Natural Language Processing to analyze comments for
+          sentiment, emotion, and cyberbullying, supplemented by keyword
+          extraction and summarization features. For better data interpretation,
+          the platform leverages Highcharts.js to present these analytical
+          insights in the form of interactive charts.
           <br />
-          {/* <img src="https://images.theconversation.com/files/191827/original/file-20171025-25516-g7rtyl.jpg?ixlib=rb-1.1.0&rect=0%2C70%2C7875%2C5667&q=45&auto=format&w=926&fit=clip" alt="Description" /> */}
         </>
       ),
     },
@@ -105,9 +113,12 @@ export default function About(props) {
       title: "Time Saver",
       content: (
         <>
-          ThreadMind helps you quickly understand what people are talking about in YouTube and Reddit comments. It uses smart tech to figure out the mood of the conversation and even spots mean or harmful comments. You get easy-to-read summaries and charts, so you don't have to go through every single comment yourself.
+          ThreadMind helps you quickly understand what people are talking about
+          in YouTube and Reddit comments. It uses smart tech to figure out the
+          mood of the conversation and even spots mean or harmful comments. You
+          get easy-to-read summaries and charts, so you don't have to go through
+          every single comment yourself.
           <br />
-          {/* <img src="https://images.theconversation.com/files/191827/original/file-20171025-25516-g7rtyl.jpg?ixlib=rb-1.1.0&rect=0%2C70%2C7875%2C5667&q=45&auto=format&w=926&fit=clip" alt="Description" /> */}
         </>
       ),
     },
@@ -115,7 +126,10 @@ export default function About(props) {
       title: "Dark Theme",
       content: (
         <>
-          ThreadMind supports both dark and light modes, allowing users to customize their viewing experience according to their preference. This feature enhances usability and comfort, making it easier to interact with the analytical data presented by the tool.
+          ThreadMind supports both dark and light modes, allowing users to
+          customize their viewing experience according to their preference. This
+          feature enhances usability and comfort, making it easier to interact
+          with the analytical data presented by the tool.
           <br />
         </>
       ),
@@ -135,6 +149,7 @@ export default function About(props) {
       </h1>
       <br />
       <br />
+      {/* Introductory Image */}
       <div>
         <div className="row">
           <div
@@ -144,15 +159,10 @@ export default function About(props) {
             }}
           >
             <p className="lead">
-              Welcome to ThreadMind! We are a cutting-edge platform aimed at
-              providing you with in-depth analysis of online discussions, be it
-              on YouTube or Reddit.
-              <br />
-              <br />
-              Our intuitive interface offers you an array of functionalities
-              including smart API integrations, customizable analytics, and
-              user-friendly dark/light modes. Experience the next level of
-              discussion analysis with ThreadMind. 
+            Welcome to ThreadMind, a state-of-the-art platform designed for detailed analysis of online discussions on platforms like YouTube and Reddit. 
+            <br />
+            <br />
+            The interface is intuitive and offers a range of features including seamless API integrations, customizable analytics, and a user-friendly option to toggle between dark and light modes. Experience advanced discussion analysis with ThreadMind.
             </p>
           </div>
           <div className="col-md-6 order-md-2 order-1 d-flex align-items-center">
@@ -168,6 +178,8 @@ export default function About(props) {
 
       <br />
       <br />
+      {/* Features Header */}
+      
       <h1
         className="text-center"
         style={{
@@ -209,6 +221,7 @@ export default function About(props) {
       <br />
       <br />
       <br />
+      {/* Additional Sections: Tech and FAQ */}
       <h1
         className="my-3 text-center"
         style={{

@@ -73,6 +73,9 @@ const EmotionChart = ({ jsonData, mode, isLoading ,setIsLoading }) => {
           alpha: 45,
           beta: 0,
         },
+        style : {
+          fontSize: window.innerWidth <= 768 ? "1.2em" : "1.2em",
+        },
         backgroundColor: mode === "dark" ? "rgb(17, 17, 17)" : "#fff",
         margin: window.innerWidth <= 768 ? [10, 0, 0, 0] : [50, 0, 0, 0],
         credits: {
@@ -86,7 +89,7 @@ const EmotionChart = ({ jsonData, mode, isLoading ,setIsLoading }) => {
         text: "Emotion Distribution",
         style: {
           color: mode === "dark" ? "#fff" : "#000",
-          fontSize: window.innerWidth <= 768 ? "25px" : "25px",
+          fontSize: window.innerWidth <= 768 ? "1.2em" : "1.2em",
         },
       },
       tooltip: {

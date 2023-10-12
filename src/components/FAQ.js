@@ -57,14 +57,13 @@ const FAQ = () => {
         <div class="accordion-new-item">
           <button id="accordion-new-button-2" aria-expanded="false">
             <span class="accordion-new-title">
-              Which platforms does ThreadMind support?
+            What links are not supported by ThreadMind?
             </span>
             <span class="icon" aria-hidden="true"></span>
           </button>
           <div class="accordion-new-content">
             <p>
-              As of now, ThreadMind supports YouTube and Reddit. We aim to
-              expand to additional platforms in the upcoming future.
+            ThreadMind cannot process links to YouTube channels, YouTube playlists, or Reddit subreddits. Links to videos with disabled comments are also not supported, as the platform relies on comment-based NLP operations to deliver insights. Inconvenience is regretted.
             </p>
           </div>
         </div>
@@ -77,7 +76,7 @@ const FAQ = () => {
           </button>
           <div class="accordion-new-content">
             <p>
-            ThreadMind employs finely tuned machine learning models that have demonstrated an accuracy rate exceeding 95% on social media datasets. For a comprehensive analysis, we go beyond examining just top-rated comments; we also analyze less frequently rated comments to provide a more robust and accurate understanding of sentiment, emotion, and cyberbullying levels across the board.
+            Utilizing finely-tuned machine learning models, ThreadMind achieves an accuracy rate of over 95% on social media datasets. The analysis is comprehensive, covering not just top-rated but also less frequently rated comments for a robust understanding of sentiment, emotion, and cyberbullying levels.
             </p>
           </div>
         </div>
@@ -90,8 +89,7 @@ const FAQ = () => {
           </button>
           <div class="accordion-new-content">
             <p>
-              Though ThreadMind is designed for speed, occasional delays occur
-              due to API response times from social media platforms or latency issues associated with Google Cloud's Cold Start.
+            While designed for quick performance, occasional delays can happen due to API response times from social media platforms or latency issues from Google Cloud's Cold Start.
             </p>
           </div>
         </div>
@@ -106,7 +104,7 @@ const FAQ = () => {
             <p>
               Navigate to the 'Contact' tab in the menu bar and fill out the
               provided form with relevant details and issues you're
-              experiencing. We'll address your concerns promptly.
+              experiencing. Concerns will be addressed in a timely manner.
             </p>
           </div>
         </div>

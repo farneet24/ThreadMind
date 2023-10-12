@@ -82,9 +82,9 @@ const SentimentChart = ({ jsonData, mode, isLoading ,setIsLoading }) => {
         backgroundColor: mode === "dark" ? "rgb(17, 17, 17)" : "#fff",
         style: {
           color: mode === "dark" ? "#fff" : "#000", // text color based on mode
-          fontSize: window.innerWidth <= 768 ? "9px" : "20px",
+          fontSize: window.innerWidth <= 768 ? "1.2em" : "1.2em",
         },
-        margin: [40, 0, 0, 0],
+        margin: [70, 0, 0, 0],
         padding: [0, 0, 0, 0],
       },
       credits: {

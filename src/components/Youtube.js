@@ -11,6 +11,9 @@ import {
 } from "@mui/material";
 import styled, { keyframes } from "styled-components";
 import defaultImage from "./no-image-available-like-missing-picture-vector-43938299.jpg";
+import Iframe from "react-iframe";
+import YoutubeC from "./YoutubeC";
+
 // <----------------------- ScrollableContent Code --------------------------------------->
 const ScrollableContent = styled.div`
 
@@ -60,8 +63,8 @@ const ScrollableContent = styled.div`
 
 const ReadMoreButton = styled(Button)`
   margin-top: 10px;
-  background-color: ${(props) => (props.mode === "dark" ? "#444" : "#ccc")};
-  color: ${(props) => (props.mode === "dark" ? "#fff" : "#000")};
+  ${'' /* background-color: ${(props) => (props.mode === "dark" ? "#444" : "#ccc")}; */}
+  ${'' /* color: ${(props) => (props.mode === "dark" ? "#fff" : "#000")}; */}
 `;
 
 const zoomIn = keyframes`
@@ -124,6 +127,16 @@ const StyledCard = styled(Card)`
 // <------------------------------------- REAL FUNCTION CODE STARTS ---------------------------------------->
 const VideoAndChannelInfo = ({ jsonData, mode }) => {
   const [openImageModal, setOpenImageModal] = useState(false);
+  const [playVideo, setPlayVideo] = useState(false);
+  const [imageWidth, setImageWidth] = useState("100%");
+  const [imageHeight, setImageHeight] = useState("60vh");
+
+  const [videoWidth, setVideoWidth] = useState(
+    window.innerWidth <= 768 ? "400px" : "800px"
+  );
+  const [videoHeight, setVideoHeight] = useState(
+    window.innerWidth <= 768 ? "225px" : "450px"
+  );
 
   const handleOpenImageModal = () => {
     setOpenImageModal(true);
@@ -131,63 +144,154 @@ const VideoAndChannelInfo = ({ jsonData, mode }) => {
 
   const handleCloseImageModal = () => {
     setOpenImageModal(false);
+    setPlayVideo(false);
   };
 
-  const renderMedia = () => {
-    if (videoInfo.maxres_thumbnail_url) {
-      return (
-        <div>
-          <div onClick={handleOpenImageModal}>
-            <CardMedia
-              component="img"
-              alt={videoInfo.title}
-              height="200"
-              image={videoInfo.maxres_thumbnail_url}
-              style={{ cursor: "pointer" }}
-            />
-          </div>
+  // <---------------------- SUBREDDIT DESCRIPTION MODAL -------------------------------->
 
-          <Modal
-            open={openImageModal}
-            onClose={handleCloseImageModal}
+  const [openChannel, setopenChannel] = useState(false);
+
+  const handleOpen = () => {
+    setopenChannel(true);
+  };
+
+  const handleClose = () => {
+    setopenChannel(false);
+  };
+
+  // const renderMedia = () => {
+  //   if (videoInfo.maxres_thumbnail_url) {
+  //     return (
+  //       <div>
+  //         <div onClick={handleOpenImageModal}>
+  //           <CardMedia
+  //             component="img"
+  //             alt={videoInfo.title}
+  //             height="200"
+  //             image={videoInfo.maxres_thumbnail_url}
+  //             style={{ cursor: "pointer" }}
+  //           />
+  //         </div>
+
+  //         <Modal
+  //           open={openImageModal}
+  //           onClose={handleCloseImageModal}
+  //           style={{
+  //             display: "flex",
+  //             alignItems: "center",
+  //             justifyContent: "center",
+  //           }}
+  //         >
+  //           <div
+  //             style={{
+  //               outline: "none",
+  //               textAlign: "center",
+  //               maxWidth: "90%",
+  //               maxHeight: "90%",
+  //             }}
+  //           >
+  //             <img
+  //               src={videoInfo.maxres_thumbnail_url}
+  //               alt={videoInfo.title}
+  //               style={{
+  //                 width: "100%",
+  //                 height: "40vh",
+  //                 maxWidth: "100%",
+  //                 maxHeight: "100%",
+  //               }}
+  //             />
+  //           </div>
+  //         </Modal>
+  //       </div>
+  //     );
+  //   } else {
+  //     return (
+  //       <CardMedia
+  //         component="img"
+  //         alt={videoInfo.title}
+  //         height="200"
+  //         image={defaultImage}
+  //       />
+  //     );
+  //   }
+  // };
+
+  const renderMedia = () => {
+    const playButton = (
+      <Button
+        variant="contained" color="success"
+        onClick={() => setPlayVideo(true)}
+        style={{ marginTop: "10px" }}
+      >
+        Play Video
+      </Button>
+    );
+
+    const videoPlayer = (
+      <div style={{ width: videoWidth, height: videoHeight }}>
+        <Iframe
+          url={`https://www.youtube.com/embed/${videoInfo.videoId}`}
+          width="100%"
+          height="100%"
+          id="myId"
+          className="myClassname"
+          display="initial"
+          position="relative"
+          allowFullScreen
+        />
+      </div>
+    );
+
+    return (
+      <div>
+        <div onClick={handleOpenImageModal}>
+          <CardMedia
+            component="img"
+            alt={videoInfo.title}
+            height="200"
+            image={videoInfo.maxres_thumbnail_url || defaultImage}
+            style={{ cursor: "pointer" }}
+          />
+        </div>
+
+        <Modal
+          open={openImageModal}
+          onClose={handleCloseImageModal}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              outline: "none",
+              textAlign: "center",
+              maxWidth: "90%",
+              maxHeight: "90%",
             }}
           >
-            <div
-              style={{
-                outline: "none",
-                textAlign: "center",
-                maxWidth: "90%",
-                maxHeight: "90%",
-              }}
-            >
-              <img
-                src={videoInfo.maxres_thumbnail_url}
-                alt={videoInfo.title}
-                style={{
-                  width: "100%",
-                  height: "40vh",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                }}
-              />
-            </div>
-          </Modal>
-        </div>
-      );
-    } else {
-      return (
-        <CardMedia
-          component="img"
-          alt={videoInfo.title}
-          height="200"
-          image={defaultImage}
-        />
-      );
-    }
+            {playVideo ? (
+              videoPlayer
+            ) : (
+              <>
+                <img
+                  src={videoInfo.maxres_thumbnail_url}
+                  alt={videoInfo.title}
+                  style={{
+                    width: imageWidth,
+                    height: imageHeight,
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                  }}
+                />
+              </>
+            )}
+            {!playVideo && playButton}
+          </div>
+        </Modal>
+      </div>
+    );
   };
 
   const [showModal, setShowModal] = useState(false);
@@ -199,13 +303,74 @@ const VideoAndChannelInfo = ({ jsonData, mode }) => {
   const [fontSize, setFontSize] = useState(
     window.innerWidth <= 768 ? "0.75rem" : "0.9rem"
   );
+
+  // For video resizing
   useEffect(() => {
     const handleResize = () => {
-      setFontSize(window.innerWidth <= 768 ? "0.75rem" : "0.9rem");
+      if (window.innerWidth <= 360) {
+        setVideoWidth("85vw");
+        setVideoHeight("47.8125vw"); // 85vw * 9 / 16
+      } else if (window.innerWidth <= 480) {
+        setVideoWidth("90vw");
+        setVideoHeight("50.625vw"); // 90vw * 9 / 16
+      } else if (window.innerWidth <= 600) {
+        setVideoWidth("92vw");
+        setVideoHeight("51.75vw"); // 92vw * 9 / 16
+      } else if (window.innerWidth <= 768) {
+        setVideoWidth("80vw");
+        setVideoHeight("45vw"); // 80vw * 9 / 16
+      } else if (window.innerWidth <= 1024) {
+        setVideoWidth("75vw");
+        setVideoHeight("42.1875vw"); // 75vw * 9 / 16
+      } else {
+        setVideoWidth("800px");
+        setVideoHeight("450px");
+      }
     };
 
+    // Initial size set
+    handleResize();
+
+    // Attach event listener
     window.addEventListener("resize", handleResize);
 
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // For image resizing
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 360) {
+        setImageWidth("85vw");
+        setImageHeight("47.8125vw");
+      } else if (window.innerWidth <= 480) {
+        setImageWidth("90vw");
+        setImageHeight("50.625vw");
+      } else if (window.innerWidth <= 600) {
+        setImageWidth("92vw");
+        setImageHeight("51.75vw");
+      } else if (window.innerWidth <= 768) {
+        setImageWidth("80vw");
+        setImageHeight("45vw");
+      } else if (window.innerWidth <= 1024) {
+        setImageWidth("80vw");
+        setImageHeight("60vw");
+      } else {
+        setImageWidth("100%");
+        setImageHeight("60vh");
+      }
+    };
+
+    // Initial size set
+    handleResize();
+
+    // Attach event listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -391,13 +556,22 @@ const VideoAndChannelInfo = ({ jsonData, mode }) => {
   };
 
   const descriptionLines = videoInfo.description
-    .split("\n")
-    .map((line, index) => {
-      const linkedLine = linkifyDescription(line);
-      return (
-        <div key={index} dangerouslySetInnerHTML={{ __html: linkedLine }} />
-      );
-    });
+    ? videoInfo.description.split("\n").map((line, index) => {
+        const linkedLine = linkifyDescription(line);
+        return (
+          <div key={index} dangerouslySetInnerHTML={{ __html: linkedLine }} />
+        );
+      })
+    : "No Description Available";
+
+  const channeldescriptionLines = channelInfo.channel_description
+    ? channelInfo.channel_description.split("\n").map((line, index) => {
+        const linkedLine = linkifyDescription(line);
+        return (
+          <div key={index} dangerouslySetInnerHTML={{ __html: linkedLine }} />
+        );
+      })
+    : "No Description Available";
 
   const capitalizeEachWord = (str) => {
     return str.replace(/\w\S*/g, (txt) => {
@@ -432,210 +606,94 @@ const VideoAndChannelInfo = ({ jsonData, mode }) => {
   //   <-------------------------  returning the function -------------------------------->
 
   return (
-    <Grid container spacing={2}>
-      {/* Video Information */}
-      <Grid item xs={12} md={6}>
-        <StyledCard mode={mode}>
-          <Card style={mode === "dark" ? { backgroundColor: "#333" } : {}}>
-            {renderMedia()}
-            <CardContent>
-              <Typography
-                variant="h5"
-                style={{
-                  ...{
-                    fontFamily: "Merriweather",
-                    fontWeight: "600",
-                    letterSpacing: "1px",
-                    textDecorationColor:
-                      mode === "dark" ? "#9fa8da" : "#3f51b5",
-                    textDecorationThickness: "2px",
-                  },
-                  ...(mode === "dark" ? { color: "#fff" } : {}),
-                }}
-              >
-                {videoInfo.title}
-              </Typography>
-
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                style={{
-                  position: "relative",
-                  padding: "5px 10px",
-                  color: mode === "dark" ? "#fff" : "#000",
-                }}
-              >
-                <span
-                  title="Video Published On"
-                  style={{
-                    background: mode === "dark" ? "#333" : "#f2f2f2",
-                    borderRadius: "10px",
-                    padding: "5px 1px",
-                    display: "inline-block",
-                    boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <i
-                    className="fas fa-calendar-alt"
-                    style={{
-                      fontSize: "1rem",
-                      verticalAlign: "middle",
-                      marginRight: "5px",
-                      color: mode === "dark" ? "#fff" : "#000",
-                    }}
-                  ></i>
-                  {formatDate(videoInfo.published_at)} (
-                  {timeAgo(videoInfo.published_at)})
-                </span>
-              </Typography>
-
-              <br />
-              <Typography
-                variant="body1"
-                style={mode === "dark" ? { color: "#fff" } : {}}
-              >
-                {videoInfo.tags
-                  ? videoInfo.tags.map((tag, index) => (
-                      <Tag key={index} mode={mode}>
-                        {capitalizeEachWord(tag)}
-                      </Tag>
-                    ))
-                  : null}
-              </Typography>
-              <br />
-              <CardContent
-                style={{
-                  ...{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "start",
-                    padding: "20px",
-                  },
-                  ...(mode === "dark" ? { color: "#fff" } : {}),
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: window.innerWidth <= 768 ? "1.2rem" : "1.7rem",
-                    fontWeight: "bold",
-                    background:
-                      "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    display: "inline-block",
-                    margin: "0 0 10px 0",
-                  }}
-                >
-                  Video Statistics
-                </span>
-                <div
-                  style={{
-                    borderBottom: "2px solid #3f51b5",
-                    width: "98%",
-                  }}
-                ></div>
-                {/* ... Other card content ... */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                    marginTop: "20px",
-                    width: "100%",
-                  }}
-                >
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-thumbs-up"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Likes: {formatNumber(videoInfo.statistics.likeCount)}
-                    </span>
-                  </div>
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-eye"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Views: {formatNumber(videoInfo.statistics.viewCount)}
-                    </span>
-                  </div>
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-star"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Favorites:{" "}
-                      {formatNumber(videoInfo.statistics.favoriteCount)}
-                    </span>
-                  </div>
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-comments"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Comments:{" "}
-                      {formatNumber(videoInfo.statistics.commentCount)}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </CardContent>
-          </Card>
-        </StyledCard>
-      </Grid>
-
-      {/* Channel Information */}
-      <Grid item xs={12} md={6}>
-        <Paper
-          elevation={3}
-          style={mode === "dark" ? { backgroundColor: "#333" } : {}}
-        >
-          <CardContent>
-            <div
-              className="container my-3 raise"
-              style={{
-                ...{
-                  border: "2px solid #ffa260",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  transition:
-                    "border-color 0.5s, transform 0.5s, box-shadow 0.5s",
-                  boxShadow: "0 0.5em 0.5em -0.4em #ffa260",
-                },
-                ...(mode === "dark" ? { color: "#fff" } : { color: "#000" }),
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = "#e5ff60";
-                e.currentTarget.style.boxShadow =
-                  "0 0.5em 0.5em -0.4em #e5ff60";
-                e.currentTarget.style.transform = "translateY(-0.25em)";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = "#ffa260";
-                e.currentTarget.style.boxShadow =
-                  "0 0.5em 0.5em -0.4em #ffa260";
-                e.currentTarget.style.transform = "none";
-              }}
-            >
+    <>
+      <Grid container spacing={2}>
+        {/* Video Information */}
+        <Grid item xs={12} md={6}>
+          <StyledCard mode={mode}>
+            <Card style={mode === "dark" ? { backgroundColor: "#333" } : {}}>
+              {renderMedia()}
               <CardContent>
                 <Typography
                   variant="h5"
                   style={{
                     ...{
-                      fontSize: window.innerWidth <= 768 ? "0.8rem" : "1.2rem",
-                      borderBottom: "2px solid #3f51b5",
+                      fontFamily: "Merriweather",
+                      fontWeight: "600",
+                      letterSpacing: "1px",
+                      textDecorationColor:
+                        mode === "dark" ? "#9fa8da" : "#3f51b5",
+                      textDecorationThickness: "2px",
+                    },
+                    ...(mode === "dark" ? { color: "#fff" } : {}),
+                  }}
+                >
+                  {videoInfo.title}
+                </Typography>
+
+                <br />
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  style={{
+                    position: "relative",
+                    padding: "5px 10px",
+                    color: mode === "dark" ? "#fff" : "#000",
+                  }}
+                >
+                  <span
+                    title="Video Published On"
+                    style={{
+                      background: mode === "dark" ? "#333" : "#f2f2f2",
+                      borderRadius: "10px",
+                      padding: "5px 1px",
+                      display: "inline-block",
+                      boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <i
+                      className="fas fa-calendar-alt"
+                      style={{
+                        fontSize: "1rem",
+                        verticalAlign: "middle",
+                        marginRight: "5px",
+                        color: mode === "dark" ? "#fff" : "#000",
+                      }}
+                    ></i>
+                    {formatDate(videoInfo.published_at)} (
+                    {timeAgo(videoInfo.published_at)})
+                  </span>
+                </Typography>
+
+                <br />
+                <Typography
+                  variant="body1"
+                  style={mode === "dark" ? { color: "#fff" } : {}}
+                >
+                  {videoInfo.tags
+                    ? videoInfo.tags.map((tag, index) => (
+                        <Tag key={index} mode={mode}>
+                          {capitalizeEachWord(tag)}
+                        </Tag>
+                      ))
+                    : null}
+                </Typography>
+                <br />
+                <CardContent
+                  style={{
+                    ...{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "start",
+                      padding: "20px",
                     },
                     ...(mode === "dark" ? { color: "#fff" } : {}),
                   }}
                 >
                   <span
                     style={{
-                      fontSize: "1.5em",
+                      fontSize: window.innerWidth <= 768 ? "1.5rem" : "1.7rem",
                       fontWeight: "bold",
                       background:
                         "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
@@ -645,166 +703,312 @@ const VideoAndChannelInfo = ({ jsonData, mode }) => {
                       margin: "0 0 10px 0",
                     }}
                   >
-                    Channel Details
+                    Video Statistics
                   </span>
-                </Typography>
-                {/* <Typography
-                  variant="h6"
-                  style={{ marginTop: "20px", fontSize: channelfontSize }}
-                >
-                  Channel Name: {channelInfo.channel_title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  style={{
-                    ...{ marginTop: "10px", fontSize: channelfontSize },
-                    ...(mode === "dark" ? { color: "#fff" } : {}),
-                  }}
-                >
-                  Channel Created At:{" "}
-                  {formatDate(channelInfo.channel_published_at)} (
-                  {timeAgo(channelInfo.channel_published_at)})
-                </Typography> */}
-                <Typography
-                  variant="h6"
-                  style={{ marginTop: "20px", fontSize: channelfontSize }}
-                >
-                  <span
+                  <div
                     style={{
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      color: mode === "dark" ? "#FCAEAE" : "#D71313",
+                      borderBottom: "2px solid #3f51b5",
+                      width: "98%",
                     }}
-                  >
-                    Channel Name:
-                  </span>{" "}
-                  {channelInfo.channel_title}
-                </Typography>
+                  ></div> 
+                  {/* ... Other card content ... */}
+                  {window.innerWidth <= 768 ? (
+                    <>
+                      <div className="container-line">
+                        {/* Put the 2 icons code in the div */}
+                        <div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-thumbs-up"></i>
+                            <span className="icon-text">
+                               Likes: {formatNumber(videoInfo.statistics.likeCount)}
+                            </span>
+                          </div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-eye"></i>
+                            <span className="icon-text">
+                             Views: {formatNumber(videoInfo.statistics.viewCount)}
+                            </span>
+                          </div>
+                        </div>
+                        {/* Put the another 2 icon code in the div */}
+                        <div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-star"></i>
+                            <span className="icon-text">
+                              Favorites:{" "}
+                        {formatNumber(videoInfo.statistics.favoriteCount)}
+                            </span>
+                          </div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-comments"></i>
+                            <span className="icon-text">
+                              Comments:{" "}
+                        {formatNumber(videoInfo.statistics.commentCount)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="container-line">
+                        {/* Put the 2 icons code in the div */}
 
-                <Typography
-                  variant="body2"
-                  style={{
-                    marginTop: "10px",
-                    fontSize: channelfontSize,
-                    color: mode === "dark" ? "#fff" : "#000",
-                  }}
-                >
-                  <span
-                    style={{
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      color: mode === "dark" ? "#91C8E4" : "#27005D",
-                    }}
-                  >
-                    Channel Created At:
-                  </span>{" "}
-                  {formatDate(channelInfo.channel_published_at)} (
-                  {timeAgo(channelInfo.channel_published_at)})
-                </Typography>
+                        <div className="interactive-icon">
+                            <i className="fas fa-thumbs-up"></i>
+                            <span className="icon-text">
+                               Likes: {formatNumber(videoInfo.statistics.likeCount)}
+                            </span>
+                          </div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-eye"></i>
+                            <span className="icon-text">
+                             Views: {formatNumber(videoInfo.statistics.viewCount)}
+                            </span>
+                          </div>
 
-                <Grid container spacing={3} style={{ marginTop: "20px" }}>
-                  <Grid item xs={4}>
-                    <Typography
-                      variant="body1"
-                      style={{
-                        ...{ fontSize: fontSize },
-                        ...(mode === "dark" ? { color: "#fff" } : {}),
-                      }}
-                    >
-                      <i className="fa fa-user" aria-hidden="true"></i>{" "}
-                      Subscribers:{" "}
-                      {formatNumber(
-                        channelInfo.channel_statistics.subscriberCount
-                      )}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography
-                      variant="body1"
-                      style={{
-                        ...{ fontSize: fontSize },
-                        ...(mode === "dark" ? { color: "#fff" } : {}),
-                      }}
-                    >
-                      <i className="fa fa-eye" aria-hidden="true"></i> Channel
-                      Views:{" "}
-                      {formatNumber(channelInfo.channel_statistics.viewCount)}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={4}>
-                    <Typography
-                      variant="body1"
-                      style={{
-                        ...{ fontSize: fontSize },
-                        ...(mode === "dark" ? { color: "#fff" } : {}),
-                      }}
-                    >
-                      <i className="fa fa-video-camera" aria-hidden="true"></i>{" "}
-                      Video Count:{" "}
-                      {formatNumber(channelInfo.channel_statistics.videoCount)}
-                    </Typography>
-                  </Grid>
-                </Grid>
+                        {/* Put the another 2 icon code in the div */}
+
+                        <div className="interactive-icon">
+                            <i className="fas fa-star"></i>
+                            <span className="icon-text">
+                              Favorites:{" "}
+                        {formatNumber(videoInfo.statistics.favoriteCount)}
+                            </span>
+                          </div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-comments"></i>
+                            <span className="icon-text">
+                              Comments:{" "}
+                        {formatNumber(videoInfo.statistics.commentCount)}
+                            </span>
+                          </div>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
               </CardContent>
-            </div>
+              <div className="mx-4">
+                <YoutubeC jsonData={jsonData} mode={mode} />
+                <Button variant="contained" color="warning" className="mx-1 my-1">
+                <a
+                  href={`https://www.youtube.com/watch?v=${videoInfo.videoId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ textDecoration: "none", color: "#fff" }}
+                >
+                  Go to Video
+                </a>
+              </Button>
+              </div>
+              
+              <br />
+            </Card>
+          </StyledCard>
+        </Grid>
 
-            <ScrollableContent mode={mode}>
-              <Typography
-                variant="body1"
+        {/* Channel Information */}
+        <Grid item xs={12} md={6}>
+          <Paper
+            elevation={3}
+            style={mode === "dark" ? { backgroundColor: "#333" } : {}}
+          >
+            <CardContent>
+              <div
+                className="container my-3 raise"
                 style={{
-                  color: mode === "dark" ? "#FFF" : "#000",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.9rem",
-                  paddingTop: "10px",
-                  paddingLeft: "20px",
-                  paddingRight: "10px",
+                  ...{
+                    border: "2px solid #ffa260",
+                    padding: "10px",
+                    borderRadius: "10px",
+                    transition:
+                      "border-color 0.5s, transform 0.5s, box-shadow 0.5s",
+                    boxShadow: "0 0.5em 0.5em -0.4em #ffa260",
+                  },
+                  ...(mode === "dark" ? { color: "#fff" } : { color: "#000" }),
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.borderColor = "#e5ff60";
+                  e.currentTarget.style.boxShadow =
+                    "0 0.5em 0.5em -0.4em #e5ff60";
+                  e.currentTarget.style.transform = "translateY(-0.25em)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.borderColor = "#ffa260";
+                  e.currentTarget.style.boxShadow =
+                    "0 0.5em 0.5em -0.4em #ffa260";
+                  e.currentTarget.style.transform = "none";
                 }}
               >
-                <span
-                  style={{
-                    fontSize: "2em",
-                    fontWeight: "bold",
-                    background:
-                      "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    display: "inline-block",
-                    margin: "0 0 10px 0",
-                  }}
-                >
-                  Video Description
-                </span>
-                <div
-                  style={{
-                    borderBottom: "2px solid #3f51b5",
-                    width: "98%",
-                  }}
-                ></div>
-                <br />
-                {descriptionLines.slice(0, 1)}{" "}
-                {/* Slice based on your requirement */}
-                <br />
-                {
-                  // Conditionally render the Read More button
-                  Array.isArray(descriptionLines) && (
-                    <ReadMoreButton
-                      variant="contained"
-                      mode={mode}
-                      onClick={toggleModal}
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    style={{
+                      ...{
+                        fontSize:
+                          window.innerWidth <= 768 ? "0.8rem" : "1.2rem",
+                        borderBottom: "2px solid #3f51b5",
+                      },
+                      ...(mode === "dark" ? { color: "#fff" } : {}),
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: window.innerWidth <= 768 ? "1.7em" : "1.5em",
+                        fontWeight: "bold",
+                        background:
+                          "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        display: "inline-block",
+                        margin: "0 0 10px 0",
+                      }}
                     >
-                      Read More
-                    </ReadMoreButton>
-                  )
-                }
-              </Typography>
-            </ScrollableContent>
+                      Channel Details
+                    </span>
+                  </Typography>
 
-            <Modal open={showModal} onClose={toggleModal}>
-              <ModalContainer mode={mode}>
+                  <Typography
+                    variant="h6"
+                    style={{ marginTop: "20px", fontSize: channelfontSize }}
+                  >
+                    <span
+                      style={{
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                        color: mode === "dark" ? "#FCAEAE" : "#D71313",
+                      }}
+                    >
+                      Channel Name:
+                    </span>{" "}
+                    {channelInfo.channel_title}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    style={{
+                      marginTop: "10px",
+                      fontSize: channelfontSize,
+                      color: mode === "dark" ? "#fff" : "#000",
+                    }}
+                  >
+                    <span
+                      style={{
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                        color: mode === "dark" ? "#91C8E4" : "#27005D",
+                      }}
+                    >
+                      Channel Created On:
+                    </span>{" "}
+                    {formatDate(channelInfo.channel_published_at)} (
+                    {timeAgo(channelInfo.channel_published_at)})
+                  </Typography>
+
+                  <Grid container spacing={3} style={{ marginTop: "20px" }}>
+                    <Grid item xs={4}>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          ...{ fontSize: fontSize },
+                          ...(mode === "dark" ? { color: "#fff" } : {}),
+                        }}
+                      >
+                        <i className="fa fa-user" aria-hidden="true"></i>{" "}
+                        Subscribers:{" "}
+                        {formatNumber(
+                          channelInfo.channel_statistics.subscriberCount
+                        )}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          ...{ fontSize: fontSize },
+                          ...(mode === "dark" ? { color: "#fff" } : {}),
+                        }}
+                      >
+                        <i className="fa fa-eye" aria-hidden="true"></i> Channel
+                        Views:{" "}
+                        {formatNumber(channelInfo.channel_statistics.viewCount)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          ...{ fontSize: fontSize },
+                          ...(mode === "dark" ? { color: "#fff" } : {}),
+                        }}
+                      >
+                        <i
+                          className="fa fa-video-camera"
+                          aria-hidden="true"
+                        ></i>{" "}
+                        Video Count:{" "}
+                        {formatNumber(
+                          channelInfo.channel_statistics.videoCount
+                        )}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <br />
+                  <ReadMoreButton
+                    variant="contained"
+                    color="primary"
+                    mode={mode}
+                    style={{color: "#fff"}}
+                    onClick={handleOpen}
+                  >
+                    Channel Description
+                  </ReadMoreButton>
+                  <Modal open={openChannel} onClose={handleClose}>
+                    <ModalContainer mode={mode}>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          color: mode === "dark" ? "#FFF" : "#000",
+                          fontSize:
+                            window.innerWidth <= 768 ? "12px" : fontSize,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "2em",
+                            fontWeight: "bold",
+                            background:
+                              "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            display: "inline-block",
+                            margin: "0 0 10px 0",
+                          }}
+                        >
+                          Channel Description
+                        </span>
+                        <br />
+                        <br />
+                        {channeldescriptionLines}
+                      </Typography>
+                      <br />
+                      <Button variant="contained" color="error" onClick={handleClose}>
+                        Close
+                      </Button>
+                    </ModalContainer>
+                  </Modal>
+                </CardContent>
+              </div>
+
+              <ScrollableContent mode={mode}>
                 <Typography
                   variant="body1"
                   style={{
                     color: mode === "dark" ? "#FFF" : "#000",
-                    fontSize: window.innerWidth <= 768 ? "12px" : fontSize,
+                    fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.9rem",
+                    paddingTop: "10px",
+                    paddingLeft: "20px",
+                    paddingRight: "10px",
                   }}
                 >
                   <span
@@ -821,20 +1025,70 @@ const VideoAndChannelInfo = ({ jsonData, mode }) => {
                   >
                     Video Description
                   </span>
+                  <div
+                    style={{
+                      borderBottom: "2px solid #3f51b5",
+                      width: "98%",
+                    }}
+                  ></div>
                   <br />
+                  {descriptionLines.slice(0, 1)}{" "}
+                  {/* Slice based on your requirement */}
                   <br />
-                  {descriptionLines}
+                  {
+                    // Conditionally render the Read More button
+                    Array.isArray(descriptionLines) && (
+                      <ReadMoreButton
+                        variant="contained"
+                        mode={mode}
+                        style={{color: "#fff"}}
+                        onClick={toggleModal}
+                      >
+                        Read More
+                      </ReadMoreButton>
+                    )
+                  }
                 </Typography>
-                <br />
-                <Button variant="contained" onClick={toggleModal}>
-                  Close
-                </Button>
-              </ModalContainer>
-            </Modal>
-          </CardContent>
-        </Paper>
+              </ScrollableContent>
+
+              <Modal open={showModal} onClose={toggleModal}>
+                <ModalContainer mode={mode}>
+                  <Typography
+                    variant="body1"
+                    style={{
+                      color: mode === "dark" ? "#FFF" : "#000",
+                      fontSize: window.innerWidth <= 768 ? "12px" : fontSize,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "2em",
+                        fontWeight: "bold",
+                        background:
+                          "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        display: "inline-block",
+                        margin: "0 0 10px 0",
+                      }}
+                    >
+                      Video Description
+                    </span>
+                    <br />
+                    <br />
+                    {descriptionLines}
+                  </Typography>
+                  <br />
+                  <Button variant="contained" color="error" onClick={toggleModal}>
+                    Close
+                  </Button>
+                </ModalContainer>
+              </Modal>
+            </CardContent>
+          </Paper>
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 };
 

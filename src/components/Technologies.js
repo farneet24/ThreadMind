@@ -50,11 +50,12 @@ const Tech = () => {
           </button>
           <div class="accordion-new2-content">
             <p>
-              Our front-end is built using the React framework, leveraging its
-              component-based architecture for a responsive and dynamic user
-              interface. The back-end is built on Django, and both are connected
-              through REST API, ensuring a seamless flow of data between the
-              user interface and the server. We also employ Django Channels for real-time data streaming from the backend to the front-end.
+              Front-end development utilizes the React framework, capitalizing
+              on its component-based structure to offer a dynamic and responsive
+              user interface. The back-end is constructed with Django, and
+              seamless data flow between the user interface and server is
+              achieved through REST API. Django Channels are also implemented
+              for real-time data streaming from the back-end to the front-end.
             </p>
           </div>
         </div>
@@ -68,7 +69,7 @@ const Tech = () => {
           </button>
           <div class="accordion-new2-content">
             <p>
-            ThreadMind utilizes cutting-edge NLP models such as RoBERTa and XLNet for robust sentiment analysis, emotion recognition, and cyberbullying detection. These pre-trained models guarantee a high degree of accuracy and reliability in our analytical results. Further enhancing their performance, we've fine-tuned these models on a diverse dataset of high-quality comments sourced from various social media platforms like Twitter, Reddit, and YouTube.
+            ThreadMind employs advanced NLP models like RoBERTa and XLNet to deliver reliable sentiment analysis, emotion recognition, and cyberbullying detection. These pre-trained models ensure high accuracy in analytical outcomes. Performance is further optimized through fine-tuning on a diverse dataset of quality comments from social media platforms such as Twitter, Reddit, and YouTube.
             </p>
           </div>
         </div>
@@ -83,7 +84,7 @@ const Tech = () => {
           </button>
           <div class="accordion-new2-content">
             <p>
-            We integrate the GPT-4 API for text summarization and keyword extraction tasks, enriching the depth of our analysis and offering more actionable insights. To ensure a quicker user experience, data is streamed in real-time from the API, facilitating faster response times and immediate availability of analyzed information.
+            Integration with the GPT-4 API enhances text summarization and keyword extraction capabilities, providing deeper and more actionable insights. Real-time data streaming from the API ensures quick response times and immediate availability of analyzed information.
             </p>
           </div>
         </div>
@@ -97,7 +98,7 @@ const Tech = () => {
           </button>
           <div class="accordion-new2-content">
             <p>
-            ThreadMind gathers real-time comments and post details from YouTube and Reddit through their official APIs, enabling us to provide a comprehensive, multi-platform analysis and sentiment tracking. In addition to textual content, we also extract associated images, videos, and descriptions, offering users a nearly complete view of a post or video for a more informed understanding of the context.
+            Real-time comments and post details from YouTube and Reddit are collected via their official APIs. This allows for a thorough, multi-platform analysis and sentiment tracking. Beyond text, associated images, videos, and descriptions are also extracted, offering a nearly complete view of a post or video for better contextual understanding.
             </p>
           </div>
         </div>
@@ -114,10 +115,7 @@ const Tech = () => {
           </button>
           <div class="accordion-new2-content">
             <p>
-              For visually compelling and intuitive representation of analyzed
-              data, we use Highcharts. It enables us to create pie charts,
-              column charts, and other visual aids to better understand the
-              sentiments and emotions expressed in the comments.
+            Highcharts is utilized for visually engaging and easy-to-understand data representation. This enables the creation of pie charts, column charts, and other visual aids to better comprehend sentiments and emotions expressed in comments.
             </p>
           </div>
         </div>

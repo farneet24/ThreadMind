@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import styled, { keyframes } from "styled-components";
 import defaultImage from "./no-image-available-like-missing-picture-vector-43938299.jpg";
+import CommentList from "./RedditC";
 
 // <----------------------- ScrollableContent Code --------------------------------------->
 const ScrollableContent = styled.div`
@@ -61,8 +62,10 @@ const ScrollableContent = styled.div`
 
 const ReadMoreButton = styled(Button)`
   margin-top: 10px;
-  background-color: ${(props) => (props.mode === "dark" ? "#444" : "#ccc")};
-  color: ${(props) => (props.mode === "dark" ? "#fff" : "#000")};
+  ${
+    "" /* background-color: ${(props) => (props.mode === "dark" ? "#444" : "#ccc")};
+  color: ${(props) => (props.mode === "dark" ? "#fff" : "#000")}; */
+  }
 `;
 
 const zoomIn = keyframes`
@@ -146,7 +149,108 @@ const Reddit = ({ jsonData, mode }) => {
     setOpenImageModal(false);
   };
 
+  // const renderMedia = () => {
+  //   if (redditInfo.post_image) {
+  //     return (
+  //       <div>
+  //         <div onClick={handleOpenImageModal}>
+  //           <CardMedia
+  //             component="img"
+  //             alt={redditInfo.title}
+  //             height="200"
+  //             image={redditInfo.post_image || defaultImage}
+  //             style={{ cursor: "pointer" }}
+  //           />
+  //         </div>
+
+  //         <Modal
+  //           open={openImageModal}
+  //           onClose={handleCloseImageModal}
+  //           style={{
+  //             display: "flex",
+  //             alignItems: "center",
+  //             justifyContent: "center",
+  //           }}
+  //         >
+  //           <div
+  //             style={{
+  //               outline: "none",
+  //               textAlign: "center",
+  //               maxWidth: "90%",
+  //               maxHeight: "90%",
+  //             }}
+  //           >
+  //             <img
+  //               src={redditInfo.post_image}
+  //               alt={redditInfo.title}
+  //               style={{
+  //                 width: "100%",
+  //                 height: "65vh",
+  //                 maxWidth: "100%",
+  //                 maxHeight: "100%",
+  //               }}
+  //             />
+  //           </div>
+  //         </Modal>
+  //       </div>
+  //     );
+  //   } else if (redditInfo.post_video) {
+  //     return (
+  //       <>
+  //         <Button
+  //           style={{ width: "100%" }}
+  //           variant="contained"
+  //           color="primary"
+  //           onClick={handleOpenVideo}
+  //         >
+  //           Play Video
+  //         </Button>
+  //         <Modal
+  //           open={openVideo}
+  //           onClose={handleCloseVideo}
+  //           style={{
+  //             display: "flex",
+  //             alignItems: "center",
+  //             justifyContent: "center",
+  //           }}
+  //         >
+  //           <div
+  //             style={{
+  //               outline: "none",
+  //             }}
+  //           >
+  //             <video controls width="100%" height="500vh">
+  //               <source src={redditInfo.post_video} type="video/mp4" />
+  //             </video>
+  //           </div>
+  //         </Modal>
+  //       </>
+  //     );
+  //   } else {
+  //     return (
+  //       <CardMedia
+  //         component="img"
+  //         alt={redditInfo.title}
+  //         height="200"
+  //         image={defaultImage}
+  //       />
+  //     );
+  //   }
+  // };
+
   const renderMedia = () => {
+    async function appendBuffer(sourceBuffer, data) {
+      return new Promise((resolve, reject) => {
+        sourceBuffer.addEventListener("updateend", () => {
+          resolve();
+        });
+        sourceBuffer.addEventListener("error", (e) => {
+          reject(new Error(`SourceBuffer append failed: ${e}`));
+        });
+        sourceBuffer.appendBuffer(data);
+      });
+    }
+
     if (redditInfo.post_image) {
       return (
         <div>
@@ -211,14 +315,39 @@ const Reddit = ({ jsonData, mode }) => {
               justifyContent: "center",
             }}
           >
-            <div
-              style={{
-                outline: "none",
-              }}
-            >
-              <video controls width="100%" height="500vh">
-                <source src={redditInfo.post_video} type="video/mp4" />
-              </video>
+            <div style={{ outline: "none" }}>
+              <video
+                controls
+                width="100%"
+                height="500"
+                ref={(videoElement) => {
+                  if (videoElement && !videoElement.src) {
+                    videoElement.src = redditInfo.post_video;
+                    const audioUrl = redditInfo.post_video.replace(
+                      /DASH_\d+.mp4/,
+                      "DASH_audio.mp4"
+                    );
+
+                    // Create an audio element
+                    const audioElement = new Audio(audioUrl);
+
+                    // Event listener to play audio when video plays
+                    videoElement.addEventListener("play", () => {
+                      audioElement.play();
+                    });
+
+                    // Event listener to pause audio when video pauses
+                    videoElement.addEventListener("pause", () => {
+                      audioElement.pause();
+                    });
+
+                    // Event listener to keep audio and video in sync
+                    videoElement.addEventListener("timeupdate", () => {
+                      audioElement.currentTime = videoElement.currentTime;
+                    });
+                  }
+                }}
+              ></video>
             </div>
           </Modal>
         </>
@@ -297,7 +426,7 @@ const Reddit = ({ jsonData, mode }) => {
     return null; // or return a placeholder component
   }
 
-  console.log(jsonData);
+  console.log("This is Reddit Component: ", jsonData);
   //   Extracting the Information
   const redditInfo = jsonData.data.reddit_info;
   const subredditInfo = jsonData.data.subreddit_info;
@@ -484,216 +613,101 @@ const Reddit = ({ jsonData, mode }) => {
   //   <-------------------------  returning the function -------------------------------->
 
   return (
-    <Grid container spacing={2}>
-      {/* Video Information */}
-      <Grid item xs={12} md={6}>
-        <StyledCard mode={mode}>
-          <Card style={mode === "dark" ? { backgroundColor: "#333" } : {}}>
-            {renderMedia()}
-            <CardContent>
-              <Typography
-                variant="h5"
-                style={{
-                  ...{
-                    fontFamily: "Merriweather",
-                    fontWeight: "600",
-                    fontSize: window.innerWidth <= 768 ? "0.9rem" : "1.3rem",
-                    letterSpacing: "1px",
-                    textDecorationColor:
-                      mode === "dark" ? "#9fa8da" : "#3f51b5",
-                    textDecorationThickness: "2px",
-                  },
-                  ...(mode === "dark" ? { color: "#fff" } : {}),
-                }}
-              >
-                {redditInfo.title}
-              </Typography>
-
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                style={{
-                  position: "relative",
-                  padding: "5px 10px",
-                  color: mode === "dark" ? "#fff" : "#000",
-                }}
-              >
-                <span
-                  title="Post Published On"
-                  style={{
-                    background: mode === "dark" ? "#333" : "#f2f2f2",
-                    borderRadius: "10px",
-                    padding: "5px 1px",
-                    display: "inline-block",
-                    boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <i
-                    className="fas fa-calendar-alt"
-                    style={{
-                      fontSize: "1rem",
-                      verticalAlign: "middle",
-                      marginRight: "5px",
-                      color: mode === "dark" ? "#fff" : "#000",
-                    }}
-                  ></i>
-                  {formatDate(redditInfo.published_at)} (
-                  {timeAgo(redditInfo.published_at)})
-                </span>
-              </Typography>
-
-              <br />
-              <Typography
-                variant="body1"
-                style={mode === "dark" ? { color: "#fff" } : {}}
-              >
-                {redditInfo.nsfw && (
-                  <span
-                    style={{
-                      marginLeft: "10px",
-                      padding: "2px 10px",
-                      borderRadius: "15px",
-                      background: "linear-gradient(to right, red, darkred)",
-                      color: "white",
-                      boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
-                    }}
-                  >
-                    NSFW
-                  </span>
-                )}
-              </Typography>
-              <br />
-              <CardContent
-                style={{
-                  ...{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "start",
-                    padding: "20px",
-                  },
-                  ...(mode === "dark" ? { color: "#fff" } : {}),
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: window.innerWidth <= 768 ? "1.2rem" : "1.7rem",
-                    fontWeight: "bold",
-                    background:
-                      "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    display: "inline-block",
-                    margin: "0 0 10px 0",
-                  }}
-                >
-                  Post Statistics
-                </span>
-                <div
-                  style={{
-                    borderBottom: "2px solid #3f51b5",
-                    width: "98%",
-                  }}
-                ></div>
-                {/* ... Other card content ... */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                    marginTop: "20px",
-                    width: "100%",
-                  }}
-                >
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-thumbs-up"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Upvotes: {formatNumber(redditInfo.upvotes)}
-                    </span>
-                  </div>
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-thumbs-down"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Downvotes: {formatNumber(redditInfo.downvotes)}
-                    </span>
-                  </div>
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-trophy"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Upvote Ratio: {formatNumber(redditInfo.upvote_ratio)}
-                    </span>
-                  </div>
-                  <div
-                    className="interactive-icon"
-                    style={{ display: "flex", alignItems: "center" }}
-                  >
-                    <i class="fas fa-comments"></i>
-                    <span style={{ marginLeft: "10px" }}>
-                      Comments: {formatNumber(redditInfo.num_comments)}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </CardContent>
-          </Card>
-        </StyledCard>
-      </Grid>
-
-      {/* Channel Information */}
-      <Grid item xs={12} md={6}>
-        <Paper
-          elevation={3}
-          style={mode === "dark" ? { backgroundColor: "#333" } : {}}
-        >
-          <CardContent>
-            <div
-              className="container my-3 raise"
-              style={{
-                ...{
-                  border: "2px solid #ffa260",
-                  padding: "10px",
-                  borderRadius: "10px",
-                  transition:
-                    "border-color 0.5s, transform 0.5s, box-shadow 0.5s",
-                  boxShadow: "0 0.5em 0.5em -0.4em #ffa260",
-                },
-                ...(mode === "dark" ? { color: "#fff" } : { color: "#000" }),
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = "#e5ff60";
-                e.currentTarget.style.boxShadow =
-                  "0 0.5em 0.5em -0.4em #e5ff60";
-                e.currentTarget.style.transform = "translateY(-0.25em)";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = "#ffa260";
-                e.currentTarget.style.boxShadow =
-                  "0 0.5em 0.5em -0.4em #ffa260";
-                e.currentTarget.style.transform = "none";
-              }}
-            >
+    <>
+      <Grid container spacing={2}>
+        {/* Video Information */}
+        <Grid item xs={12} md={6}>
+          <StyledCard mode={mode}>
+            <Card style={mode === "dark" ? { backgroundColor: "#333" } : {}}>
+              {renderMedia()}
               <CardContent>
                 <Typography
                   variant="h5"
                   style={{
                     ...{
-                      fontSize: window.innerWidth <= 768 ? "0.8rem" : "1.2rem",
-                      borderBottom: "2px solid #3f51b5",
+                      fontFamily: "Merriweather",
+                      fontWeight: "600",
+                      fontSize: window.innerWidth <= 768 ? "1rem" : "1.3rem",
+                      letterSpacing: "1px",
+                      textDecorationColor:
+                        mode === "dark" ? "#9fa8da" : "#3f51b5",
+                      textDecorationThickness: "2px",
+                    },
+                    ...(mode === "dark" ? { color: "#fff" } : {}),
+                  }}
+                >
+                  {redditInfo.title}
+                </Typography>
+                <br />
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  style={{
+                    position: "relative",
+                    padding: "5px 10px",
+                    color: mode === "dark" ? "#fff" : "#000",
+                  }}
+                >
+                  <span
+                    title="Post Published On"
+                    style={{
+                      background: mode === "dark" ? "#333" : "#f2f2f2",
+                      borderRadius: "10px",
+                      padding: "5px 1px",
+                      display: "inline-block",
+                      boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <i
+                      className="fas fa-calendar-alt"
+                      style={{
+                        fontSize: "1rem",
+                        verticalAlign: "middle",
+                        marginRight: "5px",
+                        color: mode === "dark" ? "#fff" : "#000",
+                      }}
+                    ></i>
+                    {formatDate(redditInfo.published_at)} (
+                    {timeAgo(redditInfo.published_at)})
+                  </span>
+                </Typography>
+
+                <br />
+                <Typography
+                  variant="body1"
+                  style={mode === "dark" ? { color: "#fff" } : {}}
+                >
+                  {redditInfo.nsfw && (
+                    <span
+                      style={{
+                        marginLeft: "10px",
+                        padding: "2px 10px",
+                        borderRadius: "15px",
+                        background: "linear-gradient(to right, red, darkred)",
+                        color: "white",
+                        boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)",
+                      }}
+                    >
+                      NSFW
+                    </span>
+                  )}
+                </Typography>
+                <br />
+                <CardContent
+                  style={{
+                    ...{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "start",
+                      padding: "20px",
                     },
                     ...(mode === "dark" ? { color: "#fff" } : {}),
                   }}
                 >
                   <span
                     style={{
-                      fontSize: "1.5em",
+                      fontSize: window.innerWidth <= 768 ? "1.5rem" : "1.7rem",
                       fontWeight: "bold",
                       background:
                         "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
@@ -703,195 +717,289 @@ const Reddit = ({ jsonData, mode }) => {
                       margin: "0 0 10px 0",
                     }}
                   >
-                    Subreddit Details
+                    Post Statistics
                   </span>
-                </Typography>
-                {/* <Typography
-                  variant="h6"
-                  style={{ marginTop: "20px", fontSize: channelfontSize }}
-                >
-                  Channel Name: {subredditInfo.channel_title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  style={{
-                    ...{ marginTop: "10px", fontSize: channelfontSize },
-                    ...(mode === "dark" ? { color: "#fff" } : {}),
-                  }}
-                >
-                  Channel Created At:{" "}
-                  {formatDate(subredditInfo.channel_published_at)} (
-                  {timeAgo(subredditInfo.channel_published_at)})
-                </Typography> */}
-                <Typography
-                  variant="h6"
-                  style={{ marginTop: "20px", fontSize: channelfontSize }}
-                >
-                  <span
+                  <div
                     style={{
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      color: mode === "dark" ? "#FCAEAE" : "#D71313",
+                      borderBottom: "2px solid #3f51b5",
+                      width: "98%",
                     }}
-                  >
-                    Subreddit Name:
-                  </span>{" "}
-                  {subredditInfo.title}
-                </Typography>
+                  ></div>
+                  {/* ... Other card content ... */}
+                  {window.innerWidth <= 768 ? (
+                    <>
+                      <div className="container-line">
+                        {/* Put the 2 icons code in the div */}
+                        <div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-thumbs-up"></i>
+                            <span className="icon-text">
+                              Upvotes: {formatNumber(redditInfo.upvotes)}
+                            </span>
+                          </div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-thumbs-down"></i>
+                            <span className="icon-text">
+                              Downvotes: {formatNumber(redditInfo.downvotes)}
+                            </span>
+                          </div>
+                        </div>
+                        {/* Put the another 2 icon code in the div */}
+                        <div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-trophy"></i>
+                            <span className="icon-text">
+                              Upvote Ratio:{" "}
+                              {formatNumber(redditInfo.upvote_ratio)}
+                            </span>
+                          </div>
+                          <div className="interactive-icon">
+                            <i className="fas fa-comments"></i>
+                            <span className="icon-text">
+                              Comments: {formatNumber(redditInfo.num_comments)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="container-line">
+                        {/* Put the 2 icons code in the div */}
 
-                <Typography
-                  variant="body2"
-                  style={{
-                    marginTop: "10px",
-                    fontSize: channelfontSize,
-                    color: mode === "dark" ? "#fff" : "#000",
-                  }}
-                >
-                  <span
-                    style={{
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      color: mode === "dark" ? "#91C8E4" : "#27005D",
-                    }}
-                  >
-                    Subreddit Created At:
-                  </span>{" "}
-                  {formatDate(subredditInfo.created_at)} (
-                  {timeAgo(subredditInfo.created_at)})
-                </Typography>
+                        <div className="interactive-icon">
+                          <i className="fas fa-thumbs-up"></i>
+                          <span className="icon-text">
+                            Upvotes: {formatNumber(redditInfo.upvotes)}
+                          </span>
+                        </div>
+                        <div className="interactive-icon">
+                          <i className="fas fa-thumbs-down"></i>
+                          <span className="icon-text">
+                            Downvotes: {formatNumber(redditInfo.downvotes)}
+                          </span>
+                        </div>
 
-                <Grid container spacing={3} style={{ marginTop: "20px" }}>
-                  <Grid item xs={5}>
-                    <Typography
-                      variant="body1"
-                      style={{
-                        ...{ fontSize: fontSize },
-                        ...(mode === "dark" ? { color: "#fff" } : {}),
-                      }}
-                    >
-                      <i className="fa fa-user" aria-hidden="true"></i>
-                      {"   "}
-                      Subscribers: {formatNumber(subredditInfo.subscribers)}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={5}>
-                    <Typography
-                      variant="body1"
-                      style={{
-                        ...{ fontSize: fontSize },
-                        ...(mode === "dark" ? { color: "#fff" } : {}),
-                      }}
-                    >
-                      <i className="fa fa-eye" aria-hidden="true"></i> Channel
-                      Active Users: {formatNumber(subredditInfo.active_users)}
-                    </Typography>
-                  </Grid>
-                </Grid>
-                <br />
-                <ReadMoreButton
-                  variant="contained"
-                  mode={mode}
-                  onClick={handleOpen}
-                >
-                  SubReddit Description
-                </ReadMoreButton>
-                <Modal open={open} onClose={handleClose}>
-                  <ModalContainer mode={mode}>
-                    <Typography
-                      variant="body1"
-                      style={{
-                        color: mode === "dark" ? "#FFF" : "#000",
-                        fontSize: window.innerWidth <= 768 ? "12px" : fontSize,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: "2em",
-                          fontWeight: "bold",
-                          background:
-                            "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          display: "inline-block",
-                          margin: "0 0 10px 0",
-                        }}
-                      >
-                        Subreddit Description
-                      </span>
-                      <br />
-                      <br />
-                      {subredditdescriptionLines}
-                    </Typography>
-                    <br />
-                    <Button variant="contained" onClick={handleClose}>
-                      Close
-                    </Button>
-                  </ModalContainer>
-                </Modal>
+                        {/* Put the another 2 icon code in the div */}
+
+                        <div className="interactive-icon">
+                          <i className="fas fa-trophy"></i>
+                          <span className="icon-text">
+                            Upvote Ratio:{" "}
+                            {formatNumber(redditInfo.upvote_ratio)}
+                          </span>
+                        </div>
+                        <div className="interactive-icon">
+                          <i className="fas fa-comments"></i>
+                          <span className="icon-text">
+                            Comments: {formatNumber(redditInfo.num_comments)}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
               </CardContent>
-            </div>
+              <div className="mx-4">
+                <CommentList jsonData={jsonData} mode={mode} />
+                <Button variant="contained" color="warning" className="mx-2">
+                  <a
+                    href={`https://www.reddit.com/r/${redditInfo.subreddit}/comments/${redditInfo.post_id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ textDecoration: "none", color: "#fff" }}
+                  >
+                    Go to Post
+                  </a>
+                </Button>
+              </div>
+              <br />
+            </Card>
+          </StyledCard>
+        </Grid>
 
-            <ScrollableContent mode={mode}>
-              <Typography
-                variant="body1"
+        {/* Channel Information */}
+        <Grid item xs={12} md={6}>
+          <Paper
+            elevation={3}
+            style={mode === "dark" ? { backgroundColor: "#333" } : {}}
+          >
+            <CardContent>
+              <div
+                className="container my-3 raise"
                 style={{
-                  color: mode === "dark" ? "#FFF" : "#000",
-                  fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.9rem",
-                  paddingTop: "10px",
-                  paddingLeft: "20px",
-                  paddingRight: "10px",
+                  ...{
+                    border: "2px solid #ffa260",
+                    padding: "10px",
+                    borderRadius: "10px",
+                    transition:
+                      "border-color 0.5s, transform 0.5s, box-shadow 0.5s",
+                    boxShadow: "0 0.5em 0.5em -0.4em #ffa260",
+                  },
+                  ...(mode === "dark" ? { color: "#fff" } : { color: "#000" }),
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.borderColor = "#e5ff60";
+                  e.currentTarget.style.boxShadow =
+                    "0 0.5em 0.5em -0.4em #e5ff60";
+                  e.currentTarget.style.transform = "translateY(-0.25em)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.borderColor = "#ffa260";
+                  e.currentTarget.style.boxShadow =
+                    "0 0.5em 0.5em -0.4em #ffa260";
+                  e.currentTarget.style.transform = "none";
                 }}
               >
-                <span
-                  style={{
-                    fontSize: "2em",
-                    fontWeight: "bold",
-                    background:
-                      "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    display: "inline-block",
-                    margin: "0 0 10px 0",
-                  }}
-                >
-                  Post Description
-                </span>
-                <div
-                  style={{
-                    borderBottom: "2px solid #3f51b5",
-                    width: "98%",
-                  }}
-                ></div>
-                <br />
-                {Array.isArray(descriptionLines)
-                  ? firstSentence
-                  : descriptionLines}
-
-                {/* Slice based on your requirement */}
-                <br />
-                <br />
-                {
-                  // Conditionally render the Read More button
-                  Array.isArray(descriptionLines) && (
-                    <ReadMoreButton
-                      variant="contained"
-                      mode={mode}
-                      onClick={toggleModal}
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    style={{
+                      ...{
+                        fontSize:
+                          window.innerWidth <= 768 ? "0.8rem" : "1.2rem",
+                        borderBottom: "2px solid #3f51b5",
+                      },
+                      ...(mode === "dark" ? { color: "#fff" } : {}),
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "1.5em",
+                        fontWeight: "bold",
+                        background:
+                          "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        display: "inline-block",
+                        margin: "0 0 10px 0",
+                      }}
                     >
-                      Read More
-                    </ReadMoreButton>
-                  )
-                }
-              </Typography>
-            </ScrollableContent>
+                      Subreddit Details
+                    </span>
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    style={{ marginTop: "20px", fontSize: channelfontSize }}
+                  >
+                    <span
+                      style={{
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                        color: mode === "dark" ? "#FCAEAE" : "#D71313",
+                      }}
+                    >
+                      Subreddit Name:
+                    </span>{" "}
+                    {subredditInfo.title}
+                  </Typography>
 
-            <Modal open={showModal} onClose={toggleModal}>
-              <ModalContainer mode={mode}>
+                  <Typography
+                    variant="body2"
+                    style={{
+                      marginTop: "10px",
+                      fontSize: channelfontSize,
+                      color: mode === "dark" ? "#fff" : "#000",
+                    }}
+                  >
+                    <span
+                      style={{
+                        textTransform: "uppercase",
+                        letterSpacing: "0.1em",
+                        color: mode === "dark" ? "#91C8E4" : "#27005D",
+                      }}
+                    >
+                      Subreddit Created On:
+                    </span>{" "}
+                    {formatDate(subredditInfo.created_at)} (
+                    {timeAgo(subredditInfo.created_at)})
+                  </Typography>
+
+                  <Grid container spacing={3} style={{ marginTop: "20px" }}>
+                    <Grid item xs={5}>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          ...{ fontSize: fontSize },
+                          ...(mode === "dark" ? { color: "#fff" } : {}),
+                        }}
+                      >
+                        <i className="fa fa-user" aria-hidden="true"></i>
+                        {"   "}
+                        Subscribers: {formatNumber(subredditInfo.subscribers)}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={5}>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          ...{ fontSize: fontSize },
+                          ...(mode === "dark" ? { color: "#fff" } : {}),
+                        }}
+                      >
+                        <i className="fa fa-eye" aria-hidden="true"></i> Channel
+                        Active Users: {formatNumber(subredditInfo.active_users)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                  <br />
+                  <ReadMoreButton
+                    variant="contained"
+                    mode={mode}
+                    onClick={handleOpen}
+                  >
+                    SubReddit Description
+                  </ReadMoreButton>
+                  <Modal open={open} onClose={handleClose}>
+                    <ModalContainer mode={mode}>
+                      <Typography
+                        variant="body1"
+                        style={{
+                          color: mode === "dark" ? "#FFF" : "#000",
+                          fontSize:
+                            window.innerWidth <= 768 ? "12px" : fontSize,
+                        }}
+                      >
+                        <span
+                          style={{
+                            fontSize: "2em",
+                            fontWeight: "bold",
+                            background:
+                              "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            display: "inline-block",
+                            margin: "0 0 10px 0",
+                          }}
+                        >
+                          Subreddit Description
+                        </span>
+                        <br />
+                        <br />
+                        {subredditdescriptionLines}
+                      </Typography>
+                      <br />
+                      <Button
+                        variant="contained"
+                        style={{ backgroundColor: "#dc3545" }}
+                        onClick={handleClose}
+                      >
+                        Close
+                      </Button>
+                    </ModalContainer>
+                  </Modal>
+                </CardContent>
+              </div>
+
+              <ScrollableContent mode={mode}>
                 <Typography
                   variant="body1"
                   style={{
                     color: mode === "dark" ? "#FFF" : "#000",
-                    fontSize: window.innerWidth <= 768 ? "12px" : fontSize,
+                    fontSize: window.innerWidth <= 768 ? "0.75rem" : "0.9rem",
+                    paddingTop: "10px",
+                    paddingLeft: "20px",
+                    paddingRight: "10px",
                   }}
                 >
                   <span
@@ -903,25 +1011,82 @@ const Reddit = ({ jsonData, mode }) => {
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                       display: "inline-block",
-                      margin: "0 0 20px 0",
+                      margin: "0 0 10px 0",
                     }}
                   >
                     Post Description
                   </span>
+                  <div
+                    style={{
+                      borderBottom: "2px solid #3f51b5",
+                      width: "98%",
+                    }}
+                  ></div>
+                  <br />
+                  {Array.isArray(descriptionLines)
+                    ? firstSentence
+                    : descriptionLines}
+
+                  {/* Slice based on your requirement */}
                   <br />
                   <br />
-                  {descriptionLines}
+                  {
+                    // Conditionally render the Read More button
+                    Array.isArray(descriptionLines) && (
+                      <ReadMoreButton
+                        variant="contained"
+                        mode={mode}
+                        onClick={toggleModal}
+                      >
+                        Read More
+                      </ReadMoreButton>
+                    )
+                  }
                 </Typography>
-                <br />
-                <Button variant="contained" onClick={toggleModal}>
-                  Close
-                </Button>
-              </ModalContainer>
-            </Modal>
-          </CardContent>
-        </Paper>
+              </ScrollableContent>
+
+              <Modal open={showModal} onClose={toggleModal}>
+                <ModalContainer mode={mode}>
+                  <Typography
+                    variant="body1"
+                    style={{
+                      color: mode === "dark" ? "#FFF" : "#000",
+                      fontSize: window.innerWidth <= 768 ? "12px" : fontSize,
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "2em",
+                        fontWeight: "bold",
+                        background:
+                          "linear-gradient(90deg, rgba(255,0,150,1) 0%, rgba(0,204,255,1) 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        display: "inline-block",
+                        margin: "0 0 20px 0",
+                      }}
+                    >
+                      Post Description
+                    </span>
+                    <br />
+                    <br />
+                    {descriptionLines}
+                  </Typography>
+                  <br />
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: "#dc3545" }}
+                    onClick={toggleModal}
+                  >
+                    Close
+                  </Button>
+                </ModalContainer>
+              </Modal>
+            </CardContent>
+          </Paper>
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 };
 

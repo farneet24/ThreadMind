@@ -1,7 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 
-const areObjectsEqual = (obj1, obj2) => JSON.stringify(obj1) === JSON.stringify(obj2);
+const areObjectsEqual = (obj1, obj2) =>
+  JSON.stringify(obj1) === JSON.stringify(obj2);
+
+const OpenAI = require("openai");
+
+const apiKey = process.env.REACT_APP_OPENAI_API_KEY; // Replace with your OpenAI API key
+const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
 
 const Summary = ({ jsonData, mode }) => {
   const lastSentJsonData = useRef(null); // Reference to store the last sent jsonData
@@ -11,6 +17,7 @@ const Summary = ({ jsonData, mode }) => {
     useState(false);
   const [shouldDisplayKeyword, setShouldDisplayKeyword] = useState(false);
   const openedSessions = new Set(); // To keep track of all session IDs
+
   const displaySummary = (message) => {
     if (commentsDiv.current) {
       commentsDiv.current.innerHTML += message.replace(/\/n/g, "<br/>");
@@ -24,169 +31,143 @@ const Summary = ({ jsonData, mode }) => {
   };
 
   const handleSummarize = async () => {
-    const commentStrings = jsonData.data.comments.slice(0, 15).map((item) => item.Comments);
+    // Initialize variables to store the included comments and total word count
+    let includedComments = [];
+    let totalWordCount = 0;
+  
+    // Loop through each comment to check if it can be included without exceeding the 3000-word limit
+    for (let commentObj of jsonData.data.comments) {
+      const comment = commentObj.Comments;
+      const commentWordCount = comment.split(/\s+/).filter(Boolean).length;
+  
+      if (totalWordCount + commentWordCount <= 1500) {
+        includedComments.push(comment);
+        totalWordCount += commentWordCount;
+      } else {
+        break; // Stop including comments if the 3000 words mark is crossed
+      }
+    }
+  
+    // Activate the summarization display
     setShouldDisplaySummarization(true);
-  
-    const sendData = async () => {
+
+    console.log("Total comments included: ",includedComments.length)
+    async function sendData() {
       try {
-        const response = await fetch("https://threadmind-3bfd4831eee7.herokuapp.com/api/storeComments/", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            comments: commentStrings,
-          }),
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {"role": "user", "content": `Summarize the following comments clearly in 10 points: ${includedComments}`}
+          ],
+          stream: true,
         });
   
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        for await (const chunk of completion) {
+          if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
+            let content = chunk.choices[0].delta.content;
+            if (content !== undefined) {
+              content = content.replace(/\n/g, '/n');  // Replace all occurrences of \n with /n
+              displaySummary(content);
   
-        const data = await response.json();
-        console.log("Response:", data);
-  
-        const { sessionId } = data;
-        const source = new EventSource(`https://threadmind-3bfd4831eee7.herokuapp.com/stream/${sessionId}/`);
-  
-        // Check for duplicate session IDs
-        if (openedSessions.has(sessionId)) {
-          console.log("Duplicate session ID. Closing source.");
-          source && source.close();
-          return;
-        }
-  
-        openedSessions.add(sessionId); // Add to the set of opened sessions
-        commentsDiv.current.innerHTML = "";
-  
-        source.onmessage = (event) => {
-          displaySummary(event.data);
-          if (commentsDiv.current) {
-            const textContent =
-              commentsDiv.current.textContent || commentsDiv.current.innerText;
-            const words = textContent.split(/\s+/).filter(Boolean);
-            if (words.length >= 1000) {
-              source.close(); // Close the source if words exceed 1000
-              displaySummary("<span>Word limit reached. Closing stream...</span>");
+              const textContent =
+                commentsDiv.current.textContent ||
+                commentsDiv.current.innerText;
+              const words = textContent.split(/\s+/).filter(Boolean);
+              if (words.length >= 1000) {
+                displaySummary(
+                  "<span>Word limit reached. Closing stream...</span>"
+                );
+              }
             }
           }
-        };
-  
-        source.addEventListener(
-          "done",
-          () => {
-            source.close();
-          },
-          false
-        );
-  
-        source.onerror = (event) => {
-          console.error("EventSource failed:", event);
-          source.close();
-          displaySummary("<span>Error occurred while fetching data.</span>");
-        };
-  
+        }
       } catch (error) {
-        console.error("There was an error sending the data", error);
+        console.error(`Error: ${error}`);
       }
-    };
+    }
   
     sendData();
   };
   
-
   const handleKeywords = async () => {
-    const commentStrings = jsonData.data.comments.slice(0, 15).map((item) => item.Comments);
-    setShouldDisplayKeyword(true);
+    // Initialize variables to store the included comments and total word count
+    let includedComments = [];
+    let totalWordCount = 0;
   
-    const sendData = async () => {
+    // Loop through each comment to check if it can be included without exceeding the 3000-word limit
+    for (let commentObj of jsonData.data.comments) {
+      const comment = commentObj.Comments;
+      const commentWordCount = comment.split(/\s+/).filter(Boolean).length;
+  
+      if (totalWordCount + commentWordCount <= 1500) {
+        includedComments.push(comment);
+        totalWordCount += commentWordCount;
+      } else {
+        break; // Stop including comments if the 3000 words mark is crossed
+      }
+    }
+  
+    // Activate the summarization display
+    setShouldDisplayKeyword(true);
+
+    console.log("Total comments included: ",includedComments.length)
+    async function sendData() {
       try {
-        const response = await fetch("https://threadmind-3bfd4831eee7.herokuapp.com/api/storeComments/", {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            comments: commentStrings,
-          }),
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {"role": "user", "content": `Extract Top 10 proper nouns and what they mean: ${includedComments}`}
+          ],
+          stream: true,
         });
   
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
+        for await (const chunk of completion) {
+          if (chunk.choices && chunk.choices[0] && chunk.choices[0].delta) {
+            let content = chunk.choices[0].delta.content;
+            if (content !== undefined) {
+              content = content.replace(/\n/g, '/n');  // Replace all occurrences of \n with /n
+              displayKeyword(content);
   
-        const data = await response.json();
-        console.log("Response:", data);
-  
-        const { sessionId } = data;
-        const source = new EventSource(`https://threadmind-3bfd4831eee7.herokuapp.com/stream/${sessionId}/keywords/`);
-  
-        // Check for duplicate session IDs
-        if (openedSessions.has(sessionId)) {
-          console.log("Duplicate session ID. Closing source.");
-          source && source.close();
-          return;
-        }
-  
-        openedSessions.add(sessionId);
-        commentsKey.current.innerHTML = "";
-  
-        source.onmessage = (event) => {
-          displayKeyword(event.data);
-          if (commentsKey.current) {
-            const textContent =
-              commentsKey.current.textContent || commentsKey.current.innerText;
-            const words = textContent.split(/\s+/).filter(Boolean);
-            if (words.length >= 1000) {
-              source.close();
-              displayKeyword("<span>Word limit reached. Closing stream...</span>");
+              const textContent =
+                commentsDiv.current.textContent ||
+                commentsDiv.current.innerText;
+              const words = textContent.split(/\s+/).filter(Boolean);
+              if (words.length >= 1000) {
+                displayKeyword(
+                  "<span>Word limit reached. Closing stream...</span>"
+                );
+              }
             }
           }
-        };
-  
-        source.addEventListener(
-          "done",
-          () => {
-            console.log("EventSource 'done' event received");
-            source.close();
-          },
-          false
-        );
-  
-        source.onerror = (event) => {
-          console.error("EventSource failed:", event);
-          source.close();
-          displayKeyword("<span>Error occurred while fetching data.</span>");
-        };
-  
+        }
       } catch (error) {
-        console.error("There was an error sending the data", error);
+        console.error(`Error: ${error}`);
       }
-    };
+    }
   
     sendData();
   };
-  
 
-  
   useEffect(() => {
     if (!jsonData || !jsonData.data || !jsonData.data.comments) {
       // Handle this by setting a loading or error state
       return;
     }
 
-    if (lastSentJsonData.current && areObjectsEqual(lastSentJsonData.current, jsonData)) {
+    if (
+      lastSentJsonData.current &&
+      areObjectsEqual(lastSentJsonData.current, jsonData)
+    ) {
       return;
     }
 
     // Update lastSentJsonData ref to the latest jsonData.
     lastSentJsonData.current = jsonData;
 
-    console.log('I am running')
+    console.log("I am running");
     handleSummarize();
-    console.log('I am running after summary')
+    console.log("I am running after summary");
     handleKeywords();
-
   }, [jsonData]);
 
   return (
@@ -221,12 +202,11 @@ const Summary = ({ jsonData, mode }) => {
               color: mode === "dark" ? "#E1E1E1" : "#2E2E2E",
               padding: "15px",
               borderRadius: "10px",
-              fontSize: window.innerWidth <= 768 ? "0.72rem" : "1rem",
+              fontSize: window.innerWidth <= 768 ? "0.85rem" : "1rem",
               lineHeight: "1.6",
             }}
             ref={commentsDiv}
-          >
-          </div>
+          ></div>
         </div>
       )}
 
@@ -260,12 +240,11 @@ const Summary = ({ jsonData, mode }) => {
               color: mode === "dark" ? "#E1E1E1" : "#2E2E2E",
               padding: "15px",
               borderRadius: "10px",
-              fontSize: window.innerWidth <= 768 ? "0.72rem" : "1rem",
+              fontSize: window.innerWidth <= 768 ? "0.85rem" : "1rem",
               lineHeight: "1.6",
             }}
             ref={commentsKey}
-          >
-          </div>
+          ></div>
         </div>
       )}
     </>

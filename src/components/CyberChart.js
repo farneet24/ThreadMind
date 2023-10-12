@@ -205,6 +205,8 @@ const CyberChart = ({ jsonData, mode, isLoading ,setIsLoading }) => {
       <div id="cyberbullyingContainer" style={{ height: "250px" }}></div>
       <br />
       <p id="warningText" class="alert"></p>
+      <br />
+      <br />
     </>
   );
 };

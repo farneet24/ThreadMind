@@ -1,16 +1,20 @@
+// Import required modules and hooks
 import React from "react";
 import { GrammarlyEditorPlugin } from "@grammarly/editor-sdk-react";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+// Define the Contact functional component
 function Contact(props) {
+  // Get the current location object from the router
   const location = useLocation();
 
+  // Scroll to the top of the page when the location changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
 
+  // Initialize form data state
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,36 +22,38 @@ function Contact(props) {
     message: "",
   });
 
+  // Handle form submission
   const handleSubmit = (e) => {
-    // Make a POST request to Formspree with the form data
+    e.preventDefault();
+    // POST request to Formspree to submit the form data
     fetch("https://formspree.io/f/mrgvyjrd", {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
     })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();  // This is optional if you don't want to use the response data
-    })
-    .then(() => {
-      // Reset the form data
-      setFormData({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // Optional, if you want to use the response data
+      })
+      .then(() => {
+        // Reset form data
+        setFormData({
+          name: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
   };
-  
 
+  // Handle form field changes
   const handleChange = (e) => {
     setFormData({
       ...formData,
