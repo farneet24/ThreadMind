@@ -6,8 +6,7 @@ const areObjectsEqual = (obj1, obj2) =>
 
 const OpenAI = require("openai");
 
-// const apiKey = process.env.REACT_APP_OPENAI_API_KEY; // Replace with your OpenAI API key
-const apiKey = REACT_APP_OPENAI_API_KEY; // Replace with your OpenAI API key
+const apiKey = process.env.REACT_APP_OPENAI_API_KEY; // Replace with your OpenAI API key
 const openai = new OpenAI({ apiKey: apiKey, dangerouslyAllowBrowser: true });
 
 const Summary = ({ jsonData, mode }) => {
