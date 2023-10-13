@@ -1,70 +1,44 @@
-# Getting Started with Create React App
+# ThreadMind Front-End Repository
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Table of Contents
+1. [Home Screen](#home-screen)
+2. [Analysis](#analysis)
+3. [Comment Exploration](#comment-exploration)
+4. [Additional Features](#additional-features)
+5. [Contributing](#contributing)
 
-## Available Scripts
+## Home Screen
+The ThreadMind interface initiates with an input field where users can submit YouTube or Reddit links for analysis. Alternatively, users can commence analysis by selecting one of the six predefined cards labeled "Get Started."
 
-In the project directory, you can run:
+## Analysis
 
-### `npm start`
+### YouTube Analysis
+- **Overview**: Provides comprehensive metadata, including video and channel statistics as well as descriptions.
+- **User Interaction**: Users can view a snapshot by clicking on the associated image and have the option to watch the video within the ThreadMind interface via the "Watch Video" button.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Reddit Analysis
+- **Overview**: Furnishes metadata including post and subreddit descriptions and statistics.
+- **User Interaction**: Users can click on an accompanying image to enlarge it and can also view any videos embedded within the Reddit post.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Summary and Keywords
+- **Overview**: A succinct summary of comment content is provided in the form of ten bullet points. Keywords are identified and defined.
+- **Implementation**: This is achieved through advanced Natural Language Processing algorithms hosted on Google Cloud.
 
-### `npm test`
+## Comment Exploration
+ThreadMind also allows users to browse through comments and their corresponding replies, thus offering a more nuanced understanding of public sentiment in addition to the analytical data provided.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Additional Features
 
-### `npm run build`
+### Navigation Links
+- **Overview**: Users can navigate to the original YouTube video or Reddit post.
+- **User Interaction**: Achieved via the "Go to Video" and "Go to Post" buttons respectively.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Interactive Data Visualization
+- **Overview**: The distribution of sentiment, emotion, and levels of cyberbullying among the comments are visualized.
+- **Implementation**: This feature utilizes HighchartsJS and the data is sourced from models executed on Google Cloud.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Contributing
+Individuals interested in contributing to the project are encouraged to connect through [LinkedIn](https://www.linkedin.com/in/farneet-singh-6b155b208/).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Live Demo
+The application is live and can be accessed [here](https://thread-mind.vercel.app/).
