@@ -48,9 +48,9 @@ const FAQ = () => {
           </button>
           <div class="accordion-new-content">
             <p>
-              Simply input the URL of the YouTube video or Reddit post into the
-              designated field on the Home Page. Click 'Analyze,' and the
-              analysis will be presented shortly.
+              Input the URL of either a YouTube video or a Reddit post into the designated field on the Home Page and  click 'Analyze' or press Enter. 
+              <br>
+              Alternatively, If you do not have a URL, you may click on the 'Get Started' option in any of the showcased cards to experience the full capabilities of ThreadMind. The analysis will be presented shortly.
             </p>
           </div>
         </div>
