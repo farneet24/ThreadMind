@@ -62,7 +62,7 @@ function Footer(props) {
               <div className="social-links">
                 <a href="mailto:farneetsingh_co21a3_72@dtu.ac.in"><i class="fa-solid fa-envelope"></i></a>
                 <a href="https://github.com/farneet24" target="_blank"><i className="fab fa-github"></i></a>
-                <a href="https://www.instagram.com/farneet.singh/" target="_blank"><i className="fab fa-instagram"></i></a>
+                <a href="https://www.instagram.com/farneetsingh7/" target="_blank"><i className="fab fa-instagram"></i></a>
                 <a href="https://www.linkedin.com/in/farneet-singh-6b155b208/" target="_blank"><i className="fab fa-linkedin-in" ></i></a>
               </div>
             </div>
