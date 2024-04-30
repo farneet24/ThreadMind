@@ -42,3 +42,7 @@ Individuals interested in contributing to the project are encouraged to connect 
 
 ## Live Demo
 The application is live and can be accessed [here](https://thread-mind.vercel.app/).
+
+## License
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+This project is licensed under the MIT License.
