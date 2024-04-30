@@ -46,4 +46,4 @@ The application is live and can be accessed [here](https://thread-mind.vercel.ap
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This project is licensed under the MIT License.
+The project is licensed under the MIT License.
