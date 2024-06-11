@@ -54,7 +54,7 @@ function Footer(props) {
             <div className="footer-col">
               <h4><i className="fas fa-laptop-code"></i> Web Development Projects</h4>
               <ul className="lesspad">
-                <li><a href="https://news-daily-swart.vercel.app/" target="_blank"><i className="fas fa-newspaper"></i> NewsDaily</a></li>
+                <li><a href="https://scribble-farneet.vercel.app/" target="_blank"><i className="fas fa-pen"></i> Scribble</a></li>
               </ul>
             </div>
             <div className="footer-col">
