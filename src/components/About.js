@@ -168,7 +168,7 @@ export default function About(props) {
           <div className="col-md-6 order-md-2 order-1 d-flex align-items-center">
             <img
               className="img-fluid"
-              src="https://banner2.cleanpng.com/20180512/eue/kisspng-computer-icons-icon-design-online-chat-clip-art-5af6e3d8a42220.3562721315261296246723.jpg"
+              src="chatimage.png"
               alt="Text Analysis"
               height="4px"
             />
